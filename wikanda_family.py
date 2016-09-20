@@ -25,6 +25,7 @@ class Family(family.WikimediaFamily):
         self.langs = {
             'wikanda': 'www.wikanda.es',
             'cadizpedia': 'cadizpedia.wikanda.es',
+            'huelvapedia': 'huelvapedia.wikanda.es',
         }
         # Wikimedia wikis all use "bodyContent" as the id of the <div>
         # element that contains the actual page content; change this for
