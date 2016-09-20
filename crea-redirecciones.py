@@ -34,17 +34,18 @@ def remove2(s): #replace with a single space
     return s
 
 def main():
-    skip = u'A'
+    skip = u''
     if len(sys.argv) > 1:
-        #site = pywikibot.Site(sys.argv[1], 'wikanda')
-        site = pywikibot.Site(sys.argv[1], 'wikiscc')
+        site = pywikibot.Site(sys.argv[1], 'wikanda')
+        #site = pywikibot.Site(sys.argv[1], 'wikiscc')
     else:
         print 'python script.py wiki [skiptopage]'
         sys.exit()
     if len(sys.argv) > 2:
         skip = sys.argv[2]
+    limit = 50
     gen = pagegenerators.AllpagesPageGenerator(start=skip, namespace=0, site=site)
-    pre = pagegenerators.PreloadingGenerator(gen, pageNumber=250)
+    pre = pagegenerators.PreloadingGenerator(gen, pageNumber=limit)
     alltitles = []
     c = 0
     for page in pre:
@@ -53,12 +54,11 @@ def main():
         alltitles.append(page.title())
         #print page.title()
         c +=1
-        if c % 250 == 0:
+        if c % limit == 0:
             time.sleep(1)
-            break
     
     for wtitle in alltitles:
-        if '(' in wtitle or ')' in wtitle:
+        if '(' in wtitle or ')' in wtitle or ':' in wtitle:
             continue
         
         if len(wtitle) > 1:
@@ -84,7 +84,7 @@ def main():
                         msg = u"BOT - Creando redirección a [[%s]]" % (wtitle)
                         red.text = output
                         red.save(msg, botflag=True)
-                        time.sleep(0.2)
+                        time.sleep(1)
 
 if __name__ == '__main__':
     main()
