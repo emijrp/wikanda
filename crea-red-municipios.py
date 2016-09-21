@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not", u"see <http://www.gnu.org/licenses/>.
 
+import re
 import sys
 import time
 
@@ -26,22 +27,21 @@ def creaRedireccion(locapedia='', page=''):
     print(u'Creando redirección')
     newtext = u'{{Redirección %s}}' % (locapedia['nombre'])
     page.text = newtext
-    page.save(u'BOT - Creando redirección a municipio en %s' % (locapedia['nombre']))
+    page.save(u'BOT - Creando redirección a municipio en %s' % (locapedia['nombre']), botflag=True)
 
 def ponerRedireccionSiEsNecesario(locapedia='', page=''):
     if re.search(ur'(?im)(\#|\{\{)\s*(redirecci[oó]n|redirect)', page.text):
         print(u'Ya tiene una redirección, saltamos')
-        continue
     else:
         print(u'Colocando redirección al principio')
         newtext = u'{{Redirección %s}}\n\n%s' % (locapedia['nombre'], page.text)
         if page.text != newtext:
             pywikibot.showDiff(page.text, newtext)
             page.text = newtext
-            page.save(u'BOT - Creando redirección a municipio en %s' % (locapedia['nombre']))
+            page.save(u'BOT - Creando redirección a municipio en %s' % (locapedia['nombre']), botflag=True)
                             
 def removeaccute(s):
-    return ''.join((c for c in unicodedata.normalize('NFD'", u"s) if unicodedata.category(c) != 'Mn'))
+    return ''.join((c for c in unicodedata.normalize('NFD', s) if unicodedata.category(c) != 'Mn'))
 
 def main():
     locapedias = [
@@ -83,6 +83,8 @@ def main():
     
     for locapedia in locapedias:
         for municipio in locapedia['municipios']:
+            print('-'*50)
+            print(locapedia['nombre'], municipio)
             municipiosinacentos = removeaccute(municipio)
             if municipiosinacentos == municipio:
                 page = pywikibot.Page(site, municipio)
@@ -98,14 +100,27 @@ def main():
                         ponerRedireccionSiEsNecesario(locapedia=locapedia, page=page)
                     else:
                         pagesinacentos.move(municipio, reason=u"BOT - Trasladando a título correcto")
+                        page = pywikibot.Page(site, municipio)
+                        ponerRedireccionSiEsNecesario(locapedia=locapedia, page=page)
                 else:
                     newtext = u'#redirect [[%s]]' % (municipio)
                     pagesinacentos.text = newtext
-                    pagesinacentos.save(u'BOT - Creando redirección a municipio')
+                    pagesinacentos.save(u'BOT - Creando redirección a municipio', botflag=True)
                     if page.exists():
                         ponerRedireccionSiEsNecesario(locapedia=locapedia, page=page)
                     else:
                         creaRedireccion(locapedia=locapedia, page=page)
+            
+            #redirects en minuscula
+            newtext = u'#redirect [[%s]]' % (municipio)
+            municipio_ = municipio[0]+municipio[1:].lower()
+            municipiosinacentos_ = removeaccute(municipio_)
+            for x in [municipio_, municipiosinacentos_]:
+                if x != municipio:
+                    red = pywikibot.Page(site, x)
+                    if not red.exists():
+                        red.text = newtext
+                        red.save(u'BOT - Creando redirección a municipio', botflag=True)
 
 if __name__ == '__main__':
     main()
