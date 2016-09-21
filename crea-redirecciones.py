@@ -56,6 +56,7 @@ def main():
         c +=1
         if c % limit == 0:
             time.sleep(1)
+            #break
     
     for wtitle in alltitles:
         if '(' in wtitle or ')' in wtitle or ':' in wtitle:
