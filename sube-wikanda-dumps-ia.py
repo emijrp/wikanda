@@ -33,7 +33,7 @@ def main():
     ]
     d = datetime.datetime.now().strftime('%Y%m%d')
     for locapedia, iaitem in locapedias:
-        os.system('curl https://dumps.wikanda.es/%s/xml/%s-%s.xml.7z | ia upload %s - --remote-name=%swikandaes_w-%s-history.xml.7z ' % (locapedia, locapedia, d, iaitem, locapedia, d))
+        os.system('curl https://dumps.wikanda.es/%s/xml/%s-%s.xml.7z | /usr/local/bin/ia upload %s - --remote-name=%swikandaes_w-%s-history.xml.7z ' % (locapedia, locapedia, d, iaitem, locapedia, d))
 
 if __name__ == '__main__':
     main()
